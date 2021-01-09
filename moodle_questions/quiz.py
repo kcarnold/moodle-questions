@@ -6,7 +6,13 @@ class Quiz:
     """
     This class represents Quiz as a set of Questions.
     """
-    def __init__(self):
+    def __init__(self, category):
+        """
+        :type category: str
+        :param name: category of the questions
+
+        """
+        self.category = category
         self._questions = []
 
     def add_question(self, question):
@@ -35,14 +41,21 @@ class Quiz:
             self._indent(root)
         quiz.write(file, encoding="utf-8", xml_declaration=True, short_empty_elements=False)
 
-        # TODO category
-
     def _get_xml_tree(self):
         """
         Converts self and all assigned questions to Moodle XML.
         """
         quiz = et.ElementTree(et.Element("quiz"))
         root = quiz.getroot()
+
+        # Adding question which specifies the "category"
+        category_question = et.Element("question")
+        category_question.set("type", "category")
+        category_element = et.SubElement(category_question, "category")
+        text = et.SubElement(category_element, "text")
+        text.text = str("$course$/top/" + self.category)
+        root.append(category_question)
+
         for question in self._questions:
             root.append(question._to_xml_element())
         return quiz
