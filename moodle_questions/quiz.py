@@ -27,9 +27,12 @@ class Quiz:
         :param file: filename where the XML will be saved
 
         :type pretty: bool
-        :param pretty: (not implemented) saves XML pretty printed
+        :param pretty: saves XML pretty printed
         """
         quiz = self._get_xml_tree()
+        if pretty:
+            root = quiz.getroot()
+            self._indent(root)
         quiz.write(file, encoding="utf-8", xml_declaration=True, short_empty_elements=False)
 
         # TODO category
@@ -58,7 +61,7 @@ class Quiz:
             if not elem.tail or not elem.tail.strip():
                 elem.tail = i
             for elem in elem:
-                self.indent(elem, level + 1)
+                self._indent(elem, level + 1)
             if not elem.tail or not elem.tail.strip():
                 elem.tail = i
         else:
