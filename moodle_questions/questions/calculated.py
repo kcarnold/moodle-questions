@@ -1,5 +1,6 @@
 from moodle_questions.questions.abstract import Question
 from moodle_questions.answer import CalculatedAnswer
+from xml.etree import ElementTree as et
 
 from random import uniform
 
@@ -17,9 +18,15 @@ class CalculatedQuestion(Question):
     _allow_combined_feedback = True
     _allow_multiple_tries = False
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, itemcount = 10, *args, **kwargs):
         super(CalculatedQuestion, self).__init__(*args, **kwargs)
         self.answers = []
+        self.variables = []
+        self.minimums = []
+        self.maximums = []
+        self.decimals = []
+        self.itemcount = itemcount
+
 
     def _to_xml_element(self):
         question = super(CalculatedQuestion, self)._to_xml_element()
@@ -27,47 +34,29 @@ class CalculatedQuestion(Question):
         for answer in self.answers:
             question.append(answer._to_xml_element())
 
+        dataset_definitions = et.SubElement(question, "dataset_definitions")
+
+        for i in range(len(self.variables)):
+            dataset = dataset_definition(self.variables[i],
+                                         self.itemcount,
+                                         "uniform",
+                                         self.minimums[i],
+                                         self.maximums[i],
+                                         self.decimals[i]
+                                         )
+            dataset_definitions.append(dataset)
+        
         return question
 
     def add_answer(self, fraction, text, tol=0.5, tol_type=2, fmt=1, feedback=None):
         self.answers.append(CalculatedAnswer(tol, tol_type, fmt, fraction, text, feedback))
 
-    def generate_data(self, min=0, max=100, distribution="uniform", count=10):
-        """
-        generate dataset items to include in the dataset_definition
-        make sure to define a function that does the calculations
-        """
+    def add_variables(self, variable, minimum, maximum, decimals=1):
+        self.variables.append(variable)
+        self.minimums.append(minimum)
+        self.maximums.append(maximum)
+        self.decimals.append(decimals)
 
-
-class CalculatedFormula:
-    """
-    This class contains the variables and formula for the CalculatedQuestion.
-
-    In addition limits for the randomly generated datasets and function to 
-    generate the data are also implemented here.
-    """
-    def __init__(self):
-        self.variables = []
-        self.minbounds = []
-        self.maxbounds = []
-        self.ndata = []
-
-    def set_formula(self, formula):
-        """
-        use the lambda function to set the formula that gives the
-        same answer as the answer text (moodle format)
-
-        for example, for a moodle answer with text - {base}*{height}
-        the corresponding lambda formula will be:
-            lambda base, height: base * height
-
-        That the moodle answer text formula and the python lambda formula
-        should match has to be made sure/checked manually.
-
-        Also, make sure to add the variable names in self.variables when
-        setting the formula
-        """
-        self.formula = formula
 
 class dataset_definition:
     """
@@ -97,7 +86,7 @@ class dataset_definition:
 
         name = et.SubElement(dataset_definition, "name")
         text = et.SubElement(name, "text")
-        text.text = variable
+        text.text = self.variable
 
         #type=calculated?
 
