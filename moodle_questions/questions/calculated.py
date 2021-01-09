@@ -1,6 +1,8 @@
 from moodle_questions.questions.abstract import Question
 from moodle_questions.answer import CalculatedAnswer
 
+from random import uniform
+
 class CalculatedQuestion(Question):
     """
     This class represents a calculated moodle question type
@@ -44,7 +46,98 @@ class CalculatedFormula:
     In addition limits for the randomly generated datasets and function to 
     generate the data are also implemented here.
     """
-
     def __init__(self):
         self.variables = []
-        self.
+        self.minbounds = []
+        self.maxbounds = []
+        self.ndata = []
+
+    def set_formula(self, formula):
+        """
+        use the lambda function to set the formula that gives the
+        same answer as the answer text (moodle format)
+
+        for example, for a moodle answer with text - {base}*{height}
+        the corresponding lambda formula will be:
+            lambda base, height: base * height
+
+        That the moodle answer text formula and the python lambda formula
+        should match has to be made sure/checked manually.
+
+        Also, make sure to add the variable names in self.variables when
+        setting the formula
+        """
+        self.formula = formula
+
+class dataset_definition:
+    """
+    This class defines the name, type, distribution etc of the
+    dataset along with max, min, ndata etc.
+
+    There is also a method to generate itemcount dataset_items
+    for each variable specified.
+
+    The user has to make sure that the names of these variables
+    are the same as the moodle formula prescribed.
+    """
+
+    def __init__(self, variable, itemcount, dist, minimum, maximum, decimals):
+        self.itemcount = itemcount
+        self.minimum = minimum
+        self.maximum = maximum
+        self.distribution = dist
+        self.variable = variable
+        self.decimals = decimals
+
+    def _to_xml_element(self, st="private"):
+        dataset_definition = et.Element("dataset_definition")
+        status = et.SubElement(dataset_definition, "status")
+        text = et.SubElement(status, "text")
+        text.text = st   # shared or private 
+
+        name = et.SubElement(dataset_definition, "name")
+        text = et.SubElement(name, "text")
+        text.text = variable
+
+        #type=calculated?
+
+        distribution = et.SubElement(dataset_definition, "distribution")
+        text = et.SubElement(distribution, "text")
+        text.text = self.distribution
+
+        minimum = et.SubElement(dataset_definition, "minimum")
+        text = et.SubElement(minimum, "text")
+        text.text = str(self.minimum)
+
+        maximum = et.SubElement(dataset_definition, "maximum")
+        text = et.SubElement(maximum, "text")
+        text.text = str(self.maximum)
+
+        decimals = et.SubElement(dataset_definition, "decimals")
+        text = et.SubElement(decimals, "text")
+        text.text = str(self.decimals)
+
+        itemcount = et.SubElement(dataset_definition, "itemcount")
+        itemcount.text = str(self.itemcount)
+
+        dataset_items = et.SubElement(dataset_definition, "dataset_items")
+
+        for i in range(1, self.itemcount+1):
+            dataset_item = et.SubElement(dataset_items, "dataset_item")
+            number = et.SubElement(dataset_item, "number")
+            number.text = str(i)
+
+            value = et.SubElement(dataset_item, "value")
+            value.text = str(round(uniform(self.minimum, self.maximum), self.decimals))
+
+        number_of_items = et.SubElement(dataset_definition, "number_of_items")
+        number_of_items.text = str(self.itemcount)
+
+        return dataset_definition            
+
+
+
+
+
+
+
