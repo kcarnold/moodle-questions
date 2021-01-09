@@ -9,7 +9,7 @@ class Question(metaclass=ABCMeta):
     This is an abstract class Question used as a parent for specific types of Questions.
     """
 
-    def __init__(self, name, question_text, default_mark, general_feedback=None, id_number=None, shuffle=False, *args,
+    def __init__(self, name, question_text, default_mark, general_feedback=None, id_number=None, shuffle=False, usecase=False, *args,
                  **kwargs):
         """
         :type name: str
@@ -29,6 +29,9 @@ class Question(metaclass=ABCMeta):
 
         :type shuffle: bool
         :param shuffle: (optional) shuffle answers
+
+        :type usecase: bool
+        :param usecase: (optional) does case of answer text matter. Set to 'True' if case matters.
         """
         self.name = name
         self.question_text = question_text
@@ -36,6 +39,7 @@ class Question(metaclass=ABCMeta):
         self.general_feedback = general_feedback
         self.id_number = id_number
         self.shuffle = shuffle
+        self.usecase = usecase
         self.set_combined_feedback(*args, **kwargs)
         self.set_multiple_tries(*args, **kwargs)
 
@@ -127,6 +131,9 @@ class Question(metaclass=ABCMeta):
 
         penalty = et.SubElement(question, "penalty")
         penalty.text = estr(self.penalty)
+
+        usecase = et.SubElement(question, "usecase")
+        usecase.text = str(int(self.usecase))
 
         return question
 
