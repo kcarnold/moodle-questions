@@ -78,7 +78,7 @@ class Question(metaclass=ABCMeta):
             self.incorrect_feedback = incorrect_feedback
             self.show_number_of_correct = show_number_of_correct
 
-    def set_multiple_tries(self, penalty=0.5, hints=None, *args, **kwargs):
+    def set_multiple_tries(self, penalty=0.0, hints=None, *args, **kwargs):
         """
         Allows to set penalty and hints if multiple tries are allowed.
 
@@ -124,6 +124,10 @@ class Question(metaclass=ABCMeta):
 
         idnumber = et.SubElement(question, "idnumber")
         idnumber.text = estr(self.id_number)
+
+        penalty = et.SubElement(question, "penalty")
+        penalty.text = estr(self.penalty)
+
         return question
 
     @classmethod
