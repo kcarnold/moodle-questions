@@ -1,6 +1,7 @@
 # Moodle Question Types
 
 ## Numerical
+
 The `NumericalQuestion` type requires that you add a correct answer and also specify a tolerance value. See an example below.
 
 ```python
@@ -41,30 +42,3 @@ q2.add_answer(fraction = 0, text = "100")
 
 quiz.add_question(q2)
 ```
-
-## Calculated
-The `CalculatedQuestion` type is similar to the `NumericalQuestion` type but generates a dataset of variables from which moodle can read and randomly generate separate instances of the question. The formula for the correct answer is provided as the text of the `answer` using the moodle format in which variables are indicated inside curly parentheses. See an example below which generates `itemcount=10` uniform random values of `x` between `minimum=0` and `maximum=100`. 
-
-The code has additional options such as `decimals` indicating the decimal places to consider as a result of the formula and when generating uniformly distributed random values for the variables. Currently, the code is set to only generate random values of the variables for the dataset by using a uniform distribution.
-
-```python
-from moodle_questions import Quiz, CalculatedQuestion
-
-quiz2 = Quiz()
-q2 = CalculatedQuestion(itemcount=10,
-                        name = "Calculated conversion",
-                        question_text = "Convert {x} F degrees to degree Celsius.",
-                        default_mark = 1)
-q2.add_answer(tol=0.5,
-              fraction=100,
-              text="({x}-32)/1.8",
-              )
-q2.add_variables(variable="x",
-                 minimum=0,
-                 maximum=100,
-                 )
-quiz2.add_question(q2)
-quiz2.save("calculated_export_example.xml")
-```
-
-In the above example, the tolerance `tol=0.5` is nominal i.e. the tolerate input answer is `+/- tol` of the numerical value submitted by the user. The tolerance type can be specified by the `tol_type` argument in `add_answer`; the default `tol_type=2` is for the nominal tolerance type. The other tolerance types are relative and geometric (see: https://docs.moodle.org/310/en/Calculated_question_type#Tolerance).
