@@ -1,5 +1,6 @@
 from moodle_questions.quiz import Quiz
 from moodle_questions.answer import Answer
+from moodle_questions.dataset import dataset_definition
 from moodle_questions.dragitem import DragText, DragImage
 from moodle_questions.dropzone import DropZone
 from moodle_questions.questions import CalculatedQuestion, CalculatedMultichoiceQuestion, CalculatedSimpleQuestion, \
