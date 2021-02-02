@@ -135,6 +135,9 @@ class Question(metaclass=ABCMeta):
         usecase = et.SubElement(question, "usecase")
         usecase.text = str(int(self.usecase))
 
+        shuffle = et.SubElement(question, "shuffleanswers")
+        shuffle.text = str(int(self.shuffle))
+
         return question
 
     @classmethod
