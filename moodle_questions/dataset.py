@@ -1,3 +1,5 @@
+from xml.etree import ElementTree as et
+
 class dataset_definition:
     """
     This class defines the name, type, distribution etc of the

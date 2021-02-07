@@ -13,7 +13,7 @@ class CalculatedMultichoiceQuestion(Question):
     calculated question type, and also datasets for the variables.
     See: https://docs.moodle.org/310/en/Calculated_multichoice_question_type
 
-    Currently, it is upto the user to specify the answer texts correctly
+    Currently, it is up to the user to specify the answer texts correctly
     with the wildcards.
 
     The wrong answers can also have wrong formula with wildcards.
