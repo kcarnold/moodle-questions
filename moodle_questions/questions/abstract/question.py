@@ -2,14 +2,15 @@ from abc import ABCMeta, abstractmethod
 from xml.etree import ElementTree as et
 
 from moodle_questions.utils import cdata_str, estr
-
+import os
+from base64 import b64encode
 
 class Question(metaclass=ABCMeta):
     """
     This is an abstract class Question used as a parent for specific types of Questions.
     """
 
-    def __init__(self, name, question_text, default_mark, general_feedback=None, id_number=None, shuffle=False, *args,
+    def __init__(self, name, question_text, default_mark, image_name=None, general_feedback=None, id_number=None, shuffle=False, *args,
                  **kwargs):
         """
         :type name: str
@@ -17,7 +18,10 @@ class Question(metaclass=ABCMeta):
 
         :type question_text: str
         :param question_text: text of the question
-
+        
+    :type image_name:str
+    :param image_name: name/path of optional image aside the text of the question
+    
         :type default_mark: float
         :param default_mark: the default mark
 
@@ -32,6 +36,7 @@ class Question(metaclass=ABCMeta):
         """
         self.name = name
         self.question_text = question_text
+        self.image_name = image_name
         self.default_mark = float(default_mark)
         self.general_feedback = general_feedback
         self.id_number = id_number
@@ -110,8 +115,16 @@ class Question(metaclass=ABCMeta):
 
         questiontext = et.SubElement(question, "questiontext", {"format": "html"})
         text = et.SubElement(questiontext, "text")
+        
+        if self.image_name:
+            self.question_text = self.question_text+'<p><img src="@@PLUGINFILE@@/' + self.image_name.split(os.sep)[-1]+'"<br></p>'
         text.text = cdata_str(self.question_text)
-
+    
+        if self.image_name:
+            file = et.SubElement(questiontext, "file", {"name": self.image_name.split(os.sep)[-1], "path": "/","encoding": "base64"})
+            with open(self.image_name, "rb") as f:
+                file.text = str(b64encode(f.read()), "utf-8")
+        
         defaultgrade = et.SubElement(question, "defaultgrade")
         defaultgrade.text = str(self.default_mark)
 
