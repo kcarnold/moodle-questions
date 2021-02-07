@@ -3,8 +3,6 @@ from moodle_questions.answer import CalculatedAnswer
 from moodle_questions.dataset import dataset_definition
 from xml.etree import ElementTree as et
 
-from random import uniform
-
 class CalculatedQuestion(Question):
     """
     This class represents a calculated moodle question type

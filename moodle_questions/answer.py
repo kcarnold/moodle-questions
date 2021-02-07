@@ -59,33 +59,3 @@ class NumericalAnswer(Answer):
         tolerance.text = str(self.tolerance)
 
         return answer
-
-class CalculatedAnswer(NumericalAnswer):
-    """
-    This class represents a calculated numerical answer.
-    Similar to NumericalAnswer but the text will include
-    the formula with wildcards {x} etc and there are three
-    types of tolerancetypes:
-    1: relative 
-    2: nominal
-    3: geometric
-    
-    Additionally, the decimal places of correct answer is specified
-    through correctanswerlength
-    """
-    def __init__(self, tol=0.5, tol_type=2, fmt=1, *args, **kwargs):
-        super(CalculatedAnswer, self).__init__(tol, *args, **kwargs)
-        self.tol_type = tol_type
-        self.format = fmt
-
-    def _to_xml_element(self):
-        answer = super(CalculatedAnswer, self)._to_xml_element()
-        tolerancetype = et.SubElement(answer, "tolerancetype")
-        tolerancetype.text = str(self.tol_type)
-
-        correctanswerformat = et.SubElement(answer, "correctanswerformat")
-        correctanswerformat.text = str(self.format)
-        correctanswerlength = et.SubElement(answer, "correctanswerlength")
-        correctanswerlength.text = str(self.format)
-
-        return answer
