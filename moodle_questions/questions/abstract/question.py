@@ -19,8 +19,8 @@ class Question(metaclass=ABCMeta):
         :type question_text: str
         :param question_text: text of the question
         
-    :type image_name:str
-    :param image_name: name/path of optional image aside the text of the question
+        :type image_name:str
+        :param image_name: name/path of optional image aside the text of the question
     
         :type default_mark: float
         :param default_mark: the default mark
@@ -115,9 +115,8 @@ class Question(metaclass=ABCMeta):
 
         questiontext = et.SubElement(question, "questiontext", {"format": "html"})
         text = et.SubElement(questiontext, "text")
-        
         if self.image_name:
-            self.question_text = self.question_text+'<p><img src="@@PLUGINFILE@@/' + self.image_name.split(os.sep)[-1]+'"<br></p>'
+            self.question_text = self.question_text+'<p><img src="@@PLUGINFILE@@/' + self.image_name.split(os.sep)[-1]+'"></p>'
         text.text = cdata_str(self.question_text)
     
         if self.image_name:
@@ -137,6 +136,9 @@ class Question(metaclass=ABCMeta):
 
         idnumber = et.SubElement(question, "idnumber")
         idnumber.text = estr(self.id_number)
+                
+        shuffleanswers=et.SubElement(question, "shuffleanswers")
+        shuffleanswers.text = 'true' if self.shuffle else 'false'
         return question
 
     @classmethod
