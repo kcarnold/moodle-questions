@@ -1,7 +1,7 @@
 from abc import ABCMeta, abstractmethod
 from xml.etree import ElementTree as et
 
-from moodle_questions.utils import cdata_str, estr
+from moodle_questions.utils import cdata_str, estr, truefalse
 import os
 from base64 import b64encode
 
@@ -10,7 +10,7 @@ class Question(metaclass=ABCMeta):
     This is an abstract class Question used as a parent for specific types of Questions.
     """
 
-    def __init__(self, name, question_text, default_mark, image_name=None, general_feedback=None, id_number=None, shuffle=False, *args,
+    def __init__(self, name, question_text, default_mark, image_name=None, general_feedback=None, id_number=None, shuffle=False, usecase=False, *args,
                  **kwargs):
         """
         :type name: str
@@ -33,6 +33,9 @@ class Question(metaclass=ABCMeta):
 
         :type shuffle: bool
         :param shuffle: (optional) shuffle answers
+
+        :type usecase: bool
+        :param usecase: (optional) does case of answer text matter. Set to 'True' if case matters.
         """
         self.name = name
         self.question_text = question_text
@@ -41,6 +44,7 @@ class Question(metaclass=ABCMeta):
         self.general_feedback = general_feedback
         self.id_number = id_number
         self.shuffle = shuffle
+        self.usecase = usecase
         self.set_combined_feedback(*args, **kwargs)
         self.set_multiple_tries(*args, **kwargs)
 
@@ -83,7 +87,7 @@ class Question(metaclass=ABCMeta):
             self.incorrect_feedback = incorrect_feedback
             self.show_number_of_correct = show_number_of_correct
 
-    def set_multiple_tries(self, penalty=0.5, hints=None, *args, **kwargs):
+    def set_multiple_tries(self, penalty=0.0, hints=None, *args, **kwargs):
         """
         Allows to set penalty and hints if multiple tries are allowed.
 
@@ -137,8 +141,15 @@ class Question(metaclass=ABCMeta):
         idnumber = et.SubElement(question, "idnumber")
         idnumber.text = estr(self.id_number)
                 
-        shuffleanswers=et.SubElement(question, "shuffleanswers")
-        shuffleanswers.text = 'true' if self.shuffle else 'false'
+        shuffleanswers = et.SubElement(question, "shuffleanswers")
+        shuffleanswers.text = truefalse(self.shuffle)
+
+        penalty = et.SubElement(question, "penalty")
+        penalty.text = estr(self.penalty)
+
+        usecase = et.SubElement(question, "usecase")
+        usecase.text = truefalse(self.usecase)
+
         return question
 
     @classmethod

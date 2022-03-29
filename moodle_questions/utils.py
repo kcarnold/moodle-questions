@@ -8,3 +8,6 @@ def estr(text):
         return ""
     else:
         return str(text)
+
+def truefalse(x: bool):
+    return 'true' if x else 'false'
